@@ -1,13 +1,11 @@
-Elastic search
---------------
+## Terms
 
 Elastic search + Logstash (log storage) + Kibana (dashboards/visualisation) = ELK stack.
 
 Marvel = commercial plugin for elastic search.
 Sense = Elastic search client, part of Marvel.
 
-Indexing
---------
+## Indexing
 
 Create or Updtate a document ( = json object)
 
@@ -15,7 +13,7 @@ PUT /index/type/id will update or create document with given id.
 POST /index/type/ will create a new document and generate an id for it.
 
 Reply looks like:
-
+```
 {
   "_index": "movies",
   "_type": "movie",
@@ -23,11 +21,11 @@ Reply looks like:
   "_version": 2,
   "created": false
 }
+```
 
 Supply a "version" parameter when indexing and ES will do optimistic locking for you.
 
-Data structure
---------------
+## Data structure
 
 Each type has it's own id space
 Different types have different mappings
@@ -38,8 +36,7 @@ SQL analogy:
 * Type - table
 * Document - row
 
-Getting
--------
+## Getting
 
 GET /index/type/id
     
@@ -55,8 +52,8 @@ response looks like
   "_source": { ... document here ... }
 }
 
-Searching
----------
+## Searching
+
 GET/POST /index/type/_search
 
 Both index and type are optional
@@ -72,27 +69,30 @@ Body contains a query json object:
   "aggregations: ... aggregations here ...
 }
 
-Query DSL
----------
+## Query DSL
 
 NOTE: All examples below should be embedded in {"query": ... stuff goes here ...}
 
 "query_string": free text search on keywords, several words will be OR:ed 
 
+```
 "query_string": {
    "query": "Francis Ford Coppola",
    "fields": ["title"]       // Optional
    "default_operator": "AND" //Optional
 }
+```
 
 "filtered": limit results of query further with filtering
 
+```
  "filtered": {
    "query": ... any query here ...
    "filter": {
       "terms": {"year": 1962}
     }
 }
+```
 
 The "term" filter searches for documents with matching json properties.
 
@@ -102,12 +102,13 @@ unless you need results sorted by relevance.
 
 A nice shorthand to use when you only wish to filter and not query:
 
+```
 "constant_score": {
    "filter": {
       "term": { "year": 1962 }
    }
 }
-
+```
 Several filters in addition to "term" are available:
 
 "and": [filter1, filter2...]
@@ -127,8 +128,7 @@ Several filters in addition to "term" are available:
 * at least one "should" should match
 
 
-Mapping
--------
+## Mapping
 
 When a document is indexed two things happen:
 
@@ -144,8 +144,7 @@ Sometimes it is convinient to add more than one mapping to a json property.
 This is called a "multimapping". Each mapping has it's own name and you specify
 which one you want to use using the "field" in queries/filters.
 
-Dynamic mapping
----------------
+## Dynamic mapping
 
 Changing the field for each property to suit your needs can be very cumbersome.
 Dynamic mappings are templates that ES looks for when indexing a field it has not
@@ -154,6 +153,7 @@ seen before.
 For example we can say all properties of type string should be stored as "not analysed",
 meaning that they are not tokenized or decapitalized when indexed.
 
+```
 PUT /movies/_mapping/movie
 {
   "movie": {
@@ -168,13 +168,12 @@ PUT /movies/_mapping/movie
               "original": {
                 "type": "string",
                 "index": "not_analyzed"
+```
 
 To enable a dynamic mapping for all types in an index, set type to "_default"
 
 
-----------
-Clustering
-----------
+## Clustering
 
 ES is distributed by nature.
 
@@ -186,8 +185,8 @@ Data is spread evenly across nodes.
 Clients can talk to any node. 
 Whichever node a client talks to will talk to other nodes if needed to complete the request.
 
-Health
--------
+## Health
+
 Green: All primary and replica shards are active
 Yellow: All primary shards active, not all replica shards are active
 Red: Not all primary shards are active.
@@ -198,7 +197,3 @@ Shard: Low-level worker unit that holds a slice of data for an index.
        Documents are stored an indexed in shards, but clients never talk to them.
        Each shard has one or more replica(s) for load balancing and fault tolerance.
        The number of shards an index has limits the amount of data it can hold.
-
-
-
-
