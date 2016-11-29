@@ -1,0 +1,13 @@
+### Formal declarations:
+
+  o An exoression where the first word literally is "function" or "var"
+  o Function parameters.
+
+This is basically is the js compiler is interested in.
+
+Function expressions:
+
+  o When the word "function" is not first in the expression.
+  o Named are prefered to unnamed:
+     o Function can then be accesed from itself for recursion.
+     o Function name shows up in stack traces.

@@ -1,0 +1,23 @@
+Code
+----
+
+package (library):
+------------------
+directory containing .go files.
+package name should match directory name
+built/installed into pkg/
+
+command (executable):
+---------------------
+.go file with "main" package and "main" function.
+built/installed into bin/
+
+
+workspace
+---------
+
+go get:
+
+downloads and installs the packages named by the import paths,
+along with their dependencies.
+

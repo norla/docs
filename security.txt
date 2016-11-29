@@ -1,0 +1,26 @@
+SSL
+===
+
+Secure sockets layer
+
+Operates between the transport and application layer in the TCP/IP model.
+Anv
+
+Uses X.509-certificates (aka asymetric crypto) to exchange a symetric key for a session.
+
+SSH
+===
+
+Secure shell
+
+Uses RSA or DSA to exchange session key.
+
+RSA
+===
+
+First asymetric crypto available.
+
+DSA
+===
+
+Digital Signature Algorithm. Newer asymmetric algorithm.

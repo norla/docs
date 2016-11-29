@@ -1,0 +1,80 @@
+MY PROJECT -*- mode: org -*-
+
+
+* AMQP
+
+** Network protocol between clients and message broker.
+** Broker reveives messages from producers and sends them to consumers.
+** Programmable rather than configurable. Entities and and routing schemes are defined by clients themselves.
+
+Publishers publish to exchanges, and then distributed to queues using routing rules.
+Consumers then consume from queues using either using push or pull techniques.
+
+* Exchanges
+
+Where all messages are sent. Each message is routed to zero to N queues. How the routing is done depends
+on the exchange type and the routing rules (aka "bindings") defined.
+
+There are fouir types:
+
+Direct
+------
+
+Delivers to all queues bound with the exact same routing key.
+Usually used for distributing load between worker processes, where each type of work
+has it's own queue/routing key (eg "archive", "resize", "crop").
+
+Topic
+-----
+
+Allows wildcards in routing keys.
+
+Fanout
+------
+Sends all messages to all bound queues. Routing key is ignored. Typically used for
+broadcast situations.
+
+Terminology
+=================
+
+Server: Peer that routes and queues messages
+Client: Peer that produces or consumes messages
+Frame: data packet sent over connection
+Method: Frame that passes instructions between peers
+Durable: Server resource that survives restart
+Persistent: Message that survives server restart
+
+Protocol
+=================
+
+Error handling
+--------------
+Success is silent, failure is noisy. As long as the channel remains open, one can assume all is fine.
+Failures will cause the channel and/or connection to close.
+
+Divided into classes and methods so that client apis can be easily implenented.
+
+Classes
+-------
+Connection  - long-lasting heavy-weight connection carrying multiple channels
+Channel     - "light-weight" connection.
+Exchange    - Lets client manage exchanges on server
+Queue       - Lets client manage queues on server
+Basic       - Messaging capabilities (publish, consume, ack etc)
+Transaction - Transaction mgmt
+
+Frames
+------
+Method frames    - Carries a single method ("Basic.Consume", "Channel.Close" etc)
+Content frames   - Used for transferring messages.
+Heartbeat frames
+
+Error handling
+--------------
+
+Operational errors -> channel closed. "Queue not found", "Insufficent access privliges" etc.
+Structural errors  -> connection closed. "Invalid argument", "Bad method" etc.
+
+
+
+

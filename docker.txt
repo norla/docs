@@ -1,0 +1,82 @@
+
+
+Package an app with all of it's dependiencies into a standardized unit.
+
+A container app wraps up an application in a filesystem with:
+ * code needed to run the app
+ * runtime
+ * system tools
+ * system libs
+ * ..and anything else you need on the server..
+
+The containers share OS kernel with eachother which makes them a lot smaller &
+simpler than a virtual machine.
+
+
+# Start docker in the same way as exp-container
+docker run -it --rm -v /Volumes/Data/Users/matnorko/projects/inkspot/:/exp-container/app -v /Volumes/Data/Users/matnorko/projects/inkspot/tmp/node_modules/:/exp-container/app/node_modules --entrypoint bash inkspot:3b3cf4f
+
+# This allows you to run docker command from osx prompt (no need to ssh into exp-docker)
+eval $(docker-machine env exp-docker)
+
+# Get shell in an existing container
+docker exec -it inkspot_web_1 bash
+
+# Get ip of running docker
+docker-machine ip exp-docker
+
+Repositories, registries and tags
+---------------------------------
+
+Repository: collection of docker images
+Tags: Label applied to image in repository to distinguish it from other images in that repository
+Registry: Hosted service containing repositories of docker images.
+Image Name: [registryhost:port] name-component1/name-component2/.../
+Tag Name: any-alphanumeric-string-with-separators
+
+
+Tag command
+-----------
+
+Sets not only tag, but also
+
+o Image name
+o Image repository
+o Remote registry
+
+To push an image to a remote registry, it must first be tagged with that registry
+
+$ tag  image registry/repository/name:tag
+$ push image registry/repository/name:tag # <-- WHAT WOULD HAPPEN IF WE GIVE ANOTHER REGISTRY HERE?
+
+
+Entrypoint and command
+----------------------
+
+Every container has an excutable that will lie in the foreground.
+
+This can be specifed with "entrypoint" and/ord "cmd" directives.
+
+Usual practice is to put some kind of common program with basic parameters that are unlikely
+to change in the entrypoint, and then put extra/optional parameters in the command. Like so:
+
+ENTRYPOINT ["postgres", "--basic-param1", "--basic-param2"]
+CMD ["--super-special-specific-param"]
+
+It is also possible to skip the entrypoint alltogether and do all in CMD.
+
+If CMD is a string it is considered a shell command and will be prefixed with bash -e
+
+Commands
+--------
+
+build   [options] [path | url]    - build image from Dockerfile
+run     [options] image [command] - start container by running command
+exec    [options] contianer cmd   - run cmd in existing container
+
+Goodies
+--------
+
+Start container and get a shell
+
+docker run -it -entrypoint /bin/bash --rm exp-docker.repo.dex.nu/nodejs:6.5

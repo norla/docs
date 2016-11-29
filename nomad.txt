@@ -1,0 +1,21 @@
+Allows users to run applications on a cluster of machines.
+
+
+Job - Describes "Desired state" aka the tasks we want to run.
+  Task group - Collection of Tasks that must run together
+    Task - Individual task that is executed by a Driver
+
+Constraint - limit where a task can be run. Specified att Job, Group or Task level.
+
+Driver - Docker for containers, Quemu for virtual machings, java for jars, exec for apps
+
+Allocation - Mapping of tasks to client machines. Declares that a set of tasks in a job should run
+             on a particular node.
+
+Evaluation - Created when the external state changes. (New job added, machines goes down etc).
+	     Indicates that Nomad must evaluate the state of things and ensure that the
+	     desired state is met.
+
+Scheduling - Part of evaluation: Determining appropriate allocations
+
+

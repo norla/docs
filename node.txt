@@ -1,0 +1,75 @@
+Node
+-----
+
+Node provides
+ * a js runtime (v8 engine from google)
+ * a library of useful stuff that helps building server side apps.
+
+Node runs in a single process. If something blocks the whole server is blocked.
+Everything is based on callbacks via an single-threaded event loop.
+
+Js
+--
+
+Based on objects aka simple 'map' data structure:
+
+{a: 1, b: 2}
+
+Objects can contain functions:
+
+{a}
+
+
+GC & Memory
+-----------
+
+V8 heap spaces
+
+New: all new objetcs start here. small and can be gcd often and fast
+Old-pointer: objects which may contain pointers to other objects. most objects move here after surviving young
+Old-data: objects which only contain data and not pointers to other objects.
+Large-object: Objects larger than the size limits of other spaces. These are never touched by GC
+Code: Generated executable instructions (JIT)
+Cell, Property-cell, Map: Contains objects identical in size and with limited pointers. This simplifies GC.
+
+Algotithm
+
+1. Identify root objetcs.
+2. Free any object not reachable from a root.
+
+Uses tagged(?) poiinters.
+
+Scavenge 
+
+When new space is full, live objects are copied from new to old.
+Any object left behind is dead and deleted.
+This is done frequently.
+
+Mark/sweep
+
+Old objects are deleted by mark/sweep. All memory is traversed and live objects are marked.
+Memory is then traversed again and dead objects deteled.
+This is done very rarely.
+
+2012 incremental marking was introduced, whereby marking can be done in short increments instead of one big chunk.
+This removes long gc pauses but introduces a risk that the memeory runs out of memory before the GC is finished.
+Lazy sweeping is also used, where the deletetion of old objects is divided up into small bits.
+
+Event loop
+----------
+
+Built into node iteself. Starts when the program starts, and terminates once all callbacks have finished.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

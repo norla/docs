@@ -1,0 +1,110 @@
+Event loop
+- - - - - -
+
+Async is not part of js. Instead it is provided by the browser/nodejs via an event loop.
+
+eventQ = []
+
+while (true):
+  jobQ = []
+  event = eventQ.pop()
+  if (event)
+    event.run()
+  while (not jobQ.empty)
+    jobQ.pop().run()
+
+run to completion: each events execution is never interupted
+tick             : one iteration in the loop
+event queue      : list of tasls
+job queue        : list of tasks that should be performed at the end of a tick. New stuff since ES6.
+
+En event loop is concurrent but not parallel. It breaks a task into small chunks and executes them serially.
+
+Concurrency: Being able to have mutiple tasks running at the same time.
+             Example: One teacher in a classroom helping 20 children who should each complete the same task.
+	              There are 20 tasks running at the same time, but the teacher can only
+		      help one student at a time.
+		      
+Paralellism: Being able to work on several task at the exact same time.
+             Example: Two teachers in a classroom helping 20 children.
+
+
+
+
+
+Callbacks
+- - - - - -
+
+Humans are like event loops. Even though we are "multitasking" we are only do one thing at a time, switching back and forth
+between tasks quickly.
+
+BUT even though we EXECUTE things in an async event loop, the brain thinks and PLANS sequentially. And writing code is planning
+so async callbacks is an unnatural way for humans to describe a problem solution.
+
+Trust: when sending a callback to some third-party (aka "inversion of control") you are trusting them to not:
+
+o Call it too early (in the same tick aka "Zalgo" effect)
+o Call it too late
+o Call it with invalid parameters
+o Not call it at all
+o Call it more than once
+o Swallow exceptions/errors
+
+Dealing with all these problems makes the code very very complex. Not dealing with them is basically a bug in your app.
+
+Summary: No trustability and no seqientiality.
+
+Promises
+- - - - -
+
+Inverts the inverstion-of-control. They do not remove the need for callbacks, but changes to whom we pass the callback.
+
+Instead of passing the callback directly to third-party code, the third party returns something (a promise) to which
+we pass the callback. This resolves a lot of the trust issues.
+
+o Calling too early: never happens, promises are always resolved at the end of the ticks via the job queue.
+o Calling too late: ?
+o Not called at all. Promise.race solves this.
+o Called too many times. A promise can only be resolved once, attempts to resolve it more times are ignored.
+o Swallow excpetions: Any both async errors and exceptions are always passed to the error callback.
+
+Promise.then always returns a new Promise that resolves to the value of the previous one. This enables chaining.
+
+API:
+
+Promise p = new Promise((fulfill, reject) => {
+  // A. resolve with actual value
+  fulfill(42);
+
+  // B. defer to yet another promise
+  fulfill(anotherPromise)
+
+  // C. reject if something failed
+  reject(why);
+})
+
+A promise hase two methods, both returning a new promise:
+
+then(fulfilledCb, rejectedCb)
+
+catch(rejectedCb)
+
+Promise.resolve() creates an already fulfilled promise.
+
+Promise.all, Promise.race, Promise.map etc provide flow-control functionilty.
+
+Summary: solves the trust issues, but there is still no way to write sequential code.
+
+Generators
+- - - - - -
+
+
+
+
+
+
+
+
+
+
+

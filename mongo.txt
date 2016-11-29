@@ -1,0 +1,32 @@
+Replication
+===========
+
+Replica set - group of mongod instances thah host the same data set.
+Primary     - mongod that receives all writes.
+Secondary   - applies ops from primary and therefore have the same data set.
+
+The primarty records all changes in an oplog. Secondaries replicate the oplog
+and appies the operations to their data sets. If the primary goes down, the
+replica set elects a new primary.
+
+Dump/restore procedure:
+
+[web@applejack ~]$ mongodump --db sauron-prod
+... scp/rsync ...
+[EXAD\matnorko@xpr-p-nosql101 tmp]$ mongo sauron-prod -u admin --authenticationDatabase "admin" -padmin --eval 'printjson(db.createUser({"pwd": "sauron-prod", "roles": ["dbOwner"], "user": "sauron"}))'
+[EXAD\matnorko@xpr-p-nosql101 tmp]$ mongorestore --db sauron-prod -usauron -psauron-prod dump/sauron-prod
+
+
+## Add new database using salt/triton:
+
+Edit:
+
+triton/pillar/minions/[xpr-t-test|xpr-p-nosql]/mongodb.sls
+
+Run 
+
+salt 'xpr-t-test101*' state.sls mongodb test=True --state-output=changes pillar='{mongodb: {replica_set: {master: True}}}'
+
+(Does not work at the moment though :(
+
+

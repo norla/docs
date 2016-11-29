@@ -1,0 +1,32 @@
+Multiple cursors
+- - - - - - - - - - 
+C->           : Add cursor right
+C-<           : Add cursor left
+C-c C-<       : Add cursor all
+
+Navigation
+- - - - - - - - - -
+M-b/f         : back/fwd word
+C-a/e         : back/fwd line
+M-a/e         : back/fwd sentence
+M-{/}         : back/fwd paragraph
+C-M-b/f       : back/fwd s-expression
+C-M-a/e       : back/fwd function
+M-</>         : beginning/end buffer
+
+C-v           : scroll next screen
+M-v           : scroll prev screen
+
+C-x C-[SPC]   : Pop mark
+
+General
+- - - - - - - - - -
+M-[NUM]       : Set prefix argument
+
+
+-----
+ELISP
+-----
+
+
+

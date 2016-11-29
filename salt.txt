@@ -1,0 +1,102 @@
+Saltstack
+---------
+
+* Config mgmt system that maintains remote nodes in defined states (installed
+  packages, users, running services etc)
+* Distrubuted remote execution system.
+
+Master
+------
+
+Minion
+------
+
+Grains
+------
+Interface for getting info on the underlying system. (OS version, hostname, memory etc)
+
+
+State file
+----------
+
+Format:
+apache: # id declaration 1
+  pkg #state module 1
+    - installed: # state function 1
+  service.running: # state module 2
+    - require: # requisite 1
+      - pkg: apache # Do not run state until package with id 'apache' is installed
+  
+
+State = Module performing some specific tasks.
+Environment = ?
+Group = A group of machines performing a common task, for example "web-frontend"
+Role = Configuration that can be applied to a group. For example,
+       "rabbitmq installed and running". 
+Top file = Contains a mapping between groups of machines on a network and the
+           conf roles that should be applied to them.
+State file = ?
+Requisities = dependencies between states
+Highstate = State that downloads all states for a minion and executes them
+
+Running
+-------
+
+salt 'minion id glob' <function> [arguments]
+
+target:
+ 
+Orchestration
+-------------
+With state/highstate all operations are performed on all minions at once with
+no posiibility of ordering or aborting if something fails. Orchestrestraion
+allows this.
+
+Templates
+---------
+Allows environment variables, pillars, grains etc to be used in state files.
+
+Include/extend/name
+
+Default tempalte engine is jinja.
+
+Pillar
+------
+
+Static data that can be served to specific minions. Useful for storing sensitive
+data that should not be seen by all minions. Pillar data is managed in a similar
+way to the state tree.
+
+Workflow
+--------
+
+Make changes in triton locally. Then:
+% triton/scripts/publish.sh <- uploads salt files to backpack
+% ssh root@dex-orch101
+> salt -G"roles:recommendationsapi" test.ping <- see which servers are affected
+> salt -G"roles:recommendationsapi" state.highstate <- update full server state
+
+Test run specific recipie specific hosts:
+> salt "precis*" state.sls redis test=True
+
+Add user account
+salt 'node-test-7' state.sls users/carl
+
+Add all users to server
+salt 'node-test-7' state.sls
+
+Test all minions:
+salt '*' test.ping
+
+Start minion if missing on any host:
+service salt-minion restart
+
+Commands
+--------
+state.sls
+state.orchestrate
+
+XPR
+---
+ssh dex-p-orch101.sth.basefarm.net dex\\matnorko (docker pwd)
+
