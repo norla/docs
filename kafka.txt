@@ -1,0 +1,130 @@
+Distributed, replicated commit log.
+Fault tolerant streaming platform.
+A system that lets you publish/subscribe/store/process streams of data.
+
+Designed to be fast, scalable and distributed.
+Messages are posted to topics. Consumers can subscribe to one ore more t opics.
+Kafka stores messages on disk and replicates data in a cluster to prevent data loss.
+
+Topic    - Stream of messages of a particular category. Split into 1-n partitions.
+Partiton - Contains immutable messages in an ordered sequence.
+           Consumers write to the tail of a partition.
+Segment  - Partitioms are implemented as a set of segment files. There is alwas one active
+           segment that kafka writes to. Once the max size limit is reached a new
+           is created and becomes the active one. Default segment size is large (1G)
+Controller - Broker acting as brain for the cluster. Manages states for partitions and
+             replicas. Is responsible for reassigning partitions.
+Offset   - Unique sequence id for each (partitioned) message
+Replica  - Passive backup of a partition. Replication factor of a topic
+           determines how many replicas each partition should have.
+Leader   - Cluster node taking read/writes for a partition.
+Groups   - Kafka scales consumers by distributing partitions among members of a comsumer group.
+           A consumer group is a bunch of consumers acting as one. Each consumer in the group
+	         has a set of dedicated partitions.
+
+Order is managed at the partition level, not at the topic level. Partitions are the building
+blocks of kafka, topics are more a logical container of partitions.
+
+Maxage Retention
+----------------
+
+If a maxage is set segements older than max age will be deleted.
+
+Compact retention
+-----------------
+Only keep the latest enrty per key.
+Messages  in the active segment are never compacted.
+Once the compaction is finished, the remembers where the offset of the last copacted
+message so that it knows where to pick up the work the next time compaction occurs
+(splittig the list in a un-compacted head and a compacted tail)
+
+Consumers
+---------
+
+Consumers keeps track of key offsets for it's partition and syncs this with the
+cluster periodcally.
+
+- Current
+- Last committed
+- High watermark: Last offset copied to all replicas.
+                  If we consume above this offset there is a risk that the message is lost
+		  if the server node crashes.
+- End
+
+Consumer Groups
+- - - - - - - -
+Kafka scales topic consumption by distributing partions among a "consumer group".
+A consumer group is a set of consumers sharing the same group id.
+
+Each group is assigned a broker as "group coordinator". The coordinator receives heartbeats and
+assings partitions to consumers as they come and go. The act of reassigning partitions is called
+"rebalancing".
+
+The first consumer will be "leader" of the group. When the coordinator wants to rebalance, it will send
+the list of all consumers/partitions to the leader. The leader client will then divide the partitions
+according to some scheme (round robin or other) and return the result to the coordinator.
+
+Kafka keeps track of the last offset consumed (aka "commited") by the group on each partition. After
+'offsets.retention.minutes' of no commited offsets, the group will be deleted.
+
+Protocol
+---------
+Binary protocol over TCP. Clients maintain connections to multiple brokers.
+The client sends requests messages and reads back corresponding response messages.
+The server guarantees to process requests on the same socket in the same order they arrived.
+The server has a maximum request size that will disconnect the client if exceeded.
+
+Clients control partitioning and decide to which partition data should be sent to/received from.
+The request to fetch or send data must be sent to the broker assigned as leader for the partition.
+The is enforced by the broker which will return an NotLeaderForPartion error code otherwise.
+
+Clients get broker/topic/partition/leader by asking for metadata from any broker. Once this info
+is received it does not ask again unless something happens that indicates metadata has changed.
+
+* A broker can not be reached.
+* A broker has lost leadership for a partition.
+
+Both sending and receiving messages is done in batches for better performance.
+
+The protocol is designed for incremental evolution and backward compability. Each request is
+tagged with api version. Clients must therefore ask the broker which versions it supports before
+senfing requests. The client will choose the highest possible version.
+
+SASL authentication is done after the apiversion has been established.
+
+Storage internals
+-----------------
+
+Each partition gets a directory in /var/lib/kafka/data
+
+mytopic-0
+|-- 00000000000000000000.index
+|-- 00000000000000000000.log
+|-- 00000000000000000000.timeindex
+|-- leader-epoch-checkpoint
+
+Messages are stored in the ".log" file.
+Each log file represents a segment.
+The offset of the first message is included in the filemame.
+In addition to the message data, metadata such as offset, timestamp, key etc are
+also stored in the log file.
+
+The index file maintains the position of each offset in the log file.
+It makes finding a particular offset fast.
+The timeindex does the same but with timestamps instead of offsets.
+Index files have the same name as their respective log file.
+
+Questions
+---------
+Partition + offset = unique message id?
+Consumer group = several consumers acting as one?
+
+Streams
+- - - -
+"Kafka Streams" is a client library for building apps where the input and output data is
+stored in Kafka.
+
+Replication
+- - - - - -
+For stronger durability and higher availability. 
+

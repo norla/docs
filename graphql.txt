@@ -1,0 +1,62 @@
+GraphQL
+- - - - -
+
+A query languagei for API:s with queries written as an object structure.
+A simple declarative way to retrieve data.
+
+All graphql requests are sent to the same endpoint so clients don't have to worry about:
+ o Error handling and response codes
+ o Building URL:s, choosing the right HTTP method request bodies for REST servers
+
+Typically used to to provide a single interface to a group of services.
+ o Grouping together serveral services as one
+ o Proxy / Facade to legacy service
+
+Implementing
+- - - - - - -
+1. Define types with fields.
+2. Define functions for each field on each type.
+
+For example:
+
+```
+type Query {
+  me: User
+}
+ 
+type User {
+  id: ID
+  name: String
+}
+
+function Query_me(request) {
+  return request.auth.user;
+}
+ 
+function User_name(user) {
+  return user.getName();
+}
+```
+
+Queries
+- - - - 
+Get all heroes an
+```
+{
+  human(id: 1003) {
+    name
+    height
+  }
+}
+```
+
+```
+{
+  "data": {
+    "human": {
+      "name": "Leia Organa",
+      "height": 1.5
+    }
+  }
+}
+```

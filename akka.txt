@@ -1,0 +1,152 @@
+Set of libs for designing scalable and resilient systems that span cores and networks.
+
+Actors
+------
+
+Models the world as stateful entities communicating with messages.
+  * Can only communicate with async message passing
+  * Manage theier own state.
+  * When acting on a message, it can:
+    o Create/stop child actors
+    o Send messages to other actors
+
+Actors work good in modern harware where CPU caches, threads etc makes it hard to
+share data.
+
+Error handling:
+ * Reply with error message if the error can be handled by caller
+ * Otherwise crash the actor
+
+
+Actors organised in a tree where a parent is notified if a child crashes.
+
+A parent (aka supervisor) can restart it child actors on certain types of errors
+and stop them completelyh on others.
+
+When an actor is stopped all it's children are stopped too.
+
+Actor are the core of Akka. Other modules (Clustering, HTTP etc) are built on
+top of it.
+
+Actor Systems (aka supervision trees)
+-------------------------------------
+
+Collaborating ensemble of actors. Several actor systems can co-exist in the same JVM.
+
+Best practices
+--------------
+
+ o Be like nice co-workers. Don't bother others needlessly and don't hog resources.
+ o Do not pass mutable objects between actors.
+ o Do not send behaviour(= functions?) in messages.
+ o Use top-level actors sparingly, instead use hierarchal systems.
+
+Supervision/monitoring
+----------------------
+Actors have a supervisor->subordinate relationship. On failure an actor suspends all
+subordinates and signals a failure to it's supervisor.
+
+When a subordinates signals an error a supervisor has four options
+
+ o Resume subordinate, keeping it's internal state and inbox
+ o Restart subordinate, clearing it's internal state but keeping inbox
+ o Stop subordinate permanently
+ o Escalate failure by failing itself
+
+Supervision related messages use their own mailboxes and there is no determenistic
+order betweem them and regular messages sent between actors.
+
+Top-level actors
+----------------
+
+Three actors are always created in a system:
+
+/user   : "guardian", parent of all user-created actors. (created with system.actorOf)
+/system : "system guardian", ensure orderly shutdown where logging is always active
+/       : "root", grand-parent of all guardians
+
+Montoring/DeathWatch
+--------------------
+
+An actor can monitor any other actor and be notified of it's termination.
+Used when a supervisor wants to terminate and re-create it's subordinates.
+
+
+Refs, Paths
+-----------
+
+Ref: Subtype of ActorRef, used for sending messages to the actor it represents.
+Path: SequeEnce of actor names idientifying a uniqe actor.
+
+Code
+----
+
+An actor is created by extending the Actor trait and implementing a receive method.
+
+Streams
+-------
+
+Non-trivial task to do stable streaming between actors. Buffers must not overflow and
+lost messages should be re-sent for example.
+
+The Streams API enables to define stream processing setups that can be executed with
+bounded resource usage. Back-pressure is used to ensure that producers slow down when
+consumers can't keep up.
+
+Http
+----
+
+Akka http is based on streaming. If no-one consumes an entity it is signaledas back-pressure
+stalling incoming TCP data.
+
+If streaming is not desired an entity can be read into memory by calling toStrict(timeout).
+
+Aborting a stream is accomplished with entity.runWith(Sink.cancelled)
+
+Routing DSL
+----------------
+Elgant way to define RESTFul web services.
+Higher lvl of abstraction than most other frameworks.
+
+Define service bahaviour via composable elements called "directives".
+
+Directives are assembled into a "route structure", which can be used to create a "handler flow",
+which in turn can be supplied to a "bind" call. Http().bindAndHandle takes care of this conversion.
+
+"Route" is the central concept. Turns a RequestContext into a Future[RouteResult]. A route can:
+* complete request by calling complete(...)
+* reject request by calling reject(...)
+* fail request by calling fail(...) or throwing an exception
+* do async processing and return a Future(RouteResult)
+
+Directives create routes. It's a small building block for creating route structures.
+Anatomy of a directive:
+name(args) { extractions =>
+    ... // inner route
+}
+
+A directive can do the following:
+ * Transform request before passing it to inner route
+ * Filter requets
+ * Extract values from the request
+ * Chain logic into the result transformation chain.
+ * Complete the request
+
+Common directives
+entity(as[SomeType]) { data => ...} // Unmarshall request entity works with
+                                    // akka http unmarshalling and the "as" function
+
+onSuccess(Future) { res => }
+
+Futures/ask/pipeTo
+- - - - - - - - - -
+
+Future.map: Creates a new future by applying the given fun to the successful result of this future.
+            If this future fails, the new future will containt the error insteed.
+
+pipeTo: Send result of a Future to an actor. Errors are wrapped with akka.actor.status.Failure(e)
+
+ask: Create future that completes when the recipient replies to a message. To make the future fail,
+     recipent should reply with akka.actor.status.Failure(e). Therefore recommended that the
+     recipient replies with a pipeTo.
+

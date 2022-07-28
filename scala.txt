@@ -1,0 +1,199 @@
+
+var = mutable variable
+val = immutable value
+
+type system
+- - - - - -
+Scala uses a structural type system aka "duck typing done right".
+
+methods/functions
+- - - - - - - - -
+def methodName(param1: param1Type, param2: param2Type) : returnType = { method body }
+
+returns value of last statement
+
+named parameters can be used when calling methods
+
+helper.ellipse("Hello world!", maxLength = 10)
+
+parenthesis can be skipped for calls with no parameters.
+
+literal functions can be defined as
+(arg1:type, arg2:type) => body
+
+flow control
+- - - - - - -
+
+Iteration:
+
+for item <- generator
+  if filter1
+    do-stuff
+  if filter2
+    do-other-stuff
+
+Yielding (= mapping?)
+
+for person <- persions yeild persion.name
+
+TBD
+
+classes and constructors
+- - - - - - - - - - - - -
+
+class(field1: type, field2: type) {
+
+  member1 = some-value
+  member2 = some-value
+  ... default constructor code
+
+  def this(... fields) = ... auxiliary constructor code
+  def mehtod() = ... body code
+
+}
+
+auxiliary constructors must call another auxiliary or the default
+constructor on the first line of its body
+
+static singleton classes (aka objects)
+- - - - - - - - - - - - - - - - - - -
+
+Defined with the object keyword
+
+
+object 
+
+case classes
+- - - - - - -
+
+immutable value objects, nice for pattern matching
+
+traits
+- - - -
+trait is like an interface but where some of the methods have a default implementation.
+
+implicit parameters
+- - - - - - - - - -
+A method can have a
+
+case a     => oneliner
+case other => line 1
+              line 2
+              line 3
+
+
+case a        => oneliner
+case other    => oneliner
+
+
+
+option
+- - - -
+Scalas way of representing optional values. Can be pattern matched against:
+
+val res = db.get(user)
+match res {
+      case None: println("Nothing found")
+      case Some(val): println("Found:", val)
+}
+
+anaonymous functions
+- - - - - - - - - - -
+x => x*2 // singlestatement
+x => {x + 2: x +3} // multiple statements
+   
+
+pattern matching
+- - - - - - - - -
+
+Method for checking a value agains a pattern and deconstructing a matching value
+into smaller parts.
+
+x match {
+  case p1 => ...
+  case p2 => ...
+}
+
+If the match part is omitted a "partial: function is created instead, a unary function that does
+not support every possible value that meets the input type.
+Partial functions can be chained with "andThen" and "orElse"
+NOT: "Partial" functions are NOT the same thing as "partially applied" functions.
+
+partial function: case without match described above.
+partically applied function: returned when a regular function is called without all of its args.
+currying: splitting a function into several functions taking one prameter each.
+
+
+data types:
+- - - - - -
+List: immutable recursive data structure (linked list)
+Array: mutable regular java array 
+
+
+Futures
+- - - -
+
+Run one ore more tasks concurrently and handle results when they finish.
+A Future runs a paralell task and returns the result "eventually".
+
+val f = Future {
+  Thread.sleep(500)
+  1 + 1
+}
+
+1. Block and wait for a result with Await:
+
+val result = Await.result(f, 1 second)
+
+2. Deal with result in callback (onComplete, onSuccess, onFailure)
+
+f.onComplete {
+  case Success(value) => println(s"Got the callback, meaning = $value")
+  case Failure(e) => e.printStackTrace
+}
+
+3. Combine futures with for-comprehensions
+
+val result = for {
+  r1 <- task1
+  r2 <- task2
+  r3 <- task3
+} yield (r1 + r2 + r3)
+
+result onSuccess {
+  case result => println(s"total = $result")
+}
+
+4. Combine with flatMap or map
+
+map callback usually returns a "regular" value
+flatMap callback must return a new new future
+
+task1.map(fn1).map(fn2) // This returns a russian doll of Futures in Futures.
+task.flatMap(fn1).flatMap(fn2) // This returns a single future for the result of future returned by fn2
+
+Promise
+- - - - -
+Writiable single-assignment container that completes a Future.
+There is a one-to-one relationship between a future and it's promise
+
+val p = Promise[T]()
+val f = p.future // obtain future from promise
+
+val producer = Future {
+  val r = produceSomething()
+  p success r // Here the future is completed "p failure r" for error
+  continueDoingSomethingUnrelated()
+}
+
+val consumer = Future {
+  startDoingSomething()
+  f onSuccess {
+    case r => doSomethingWithResult()
+  }
+}
+
+All Futures are completed with promises. 
+
+Datatypes
+- - - - -

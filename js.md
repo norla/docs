@@ -214,13 +214,4 @@ The "this" keyword maintains it's binding when you walk up the prototype chain.
 1. Creates a new object
 2. Sets the supplied parameter as prototype for the new object.
 
-  
-
-
-
-
-
-
-
-
 

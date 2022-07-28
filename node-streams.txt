@@ -1,0 +1,146 @@
+------------------
+Streams in node.js
+------------------
+
+Collections of data that :
+ o Does not have to fit into memory
+ o Might not be available at once
+ o Makes it easy to work with data coming from en external source one chunk at a time.
+ o Provides composability in code.
+
+Readable streams: 
+Streams that provide data: http response on client, http request on the server.
+
+Writeable streams:
+Streams that consume data: http request on the client, http response on the server.
+
+Duplex streams:
+Streams that both consume and provide data: tcp socket.
+
+Transform stream:
+Duplex stream that also modifies the data: zlib stream, crypto stream.
+
+Piping:
+-------
+
+Streams are eventemitters an can be managed with listeners. But the simplest way is to use piping.
+
+a.pipe(b).pipe(c) where a is readable, b is duplex and c is writable.
+pipeline(a,b,c,d, (err) => { ... });
+
+Pipes automatically handles errors, eof, backpressure and selecting modes (see below).
+
+Paused/flowing
+--------------
+
+Readable streams have two modes: paused and flowing (aka pull and push).
+In flowing/push mode data is continually flowing and we have to listen to events to consume it.
+In paused/pull mode we read from the stream in demand using a read() call.
+Resume/pause calls switch between the two modes.
+Pipes manages the modes are automatically handled.
+
+Implementing
+------------
+
+Writbale:
+```
+const { Writable } = require('stream');
+const outStream = new Writable({
+  write(chunk, encoding, callback) {
+    console.log(chunk.toString());
+    callback();
+  }
+});
+
+process.stdin.pipe(outStream);
+```
+
+Readable (brute force, not preferred):
+--------------------------------------
+```
+const { Readable } = require('stream');
+const inStream = new Readable({
+  read() {} // no-op
+});
+
+inStream.push("HEJ"); // push stuff we want cosnumers to consume regardless of whether they want it or not.
+
+```
+
+Readable (on demand, preferrable)
+---------------------------------
+```
+const inStream = new Readable({
+  read(size) {
+    this.push(String.fromCharCode(this.currentCharCode++));
+    if (this.currentCharCode > 90) {
+      this.push(null);
+    }
+  }
+});
+inStream.currentCharCode = 65;
+inStream.pipe(process.stdout);
+
+```
+Transform
+---------
+
+```
+const { Transform } = require('stream');
+
+const upperCaseTr = new Transform({
+  transform(chunk, encoding, callback) {
+    this.push(chunk.toString().toUpperCase());
+    callback();
+  }
+});
+
+process.stdin.pipe(upperCaseTr).pipe(process.stdout);
+```
+
+Backpressure
+------------
+
+Backpressure is when the consumer is slower than the producer and a "clog" of data builds
+up in front of the consumer eating up system resources.
+
+The remedy for backpressure is "flow control". Unix pipes, TCP and node js streams all use this
+solution.
+
+Each writable stream has a "highWaterMark" specifying a max size for it's input buffer. If this
+is exceeded the pipeline will stop sending more data.
+
+There is also a highWaterMark on readable streams, not sure why.
+https://stackoverflow.com/questions/52273452/readable-highwatermark-usefulness
+
+Internally a writeble stream has a "write" method that is called when data is written to it. This
+method will return "false" if the watermark is exceeded, causing the writer to stop writing. The writer
+will emit a "drain" event once it is ready to recieve more data again.
+
+NOTE: the "write" method mentioned above is not the same as the "write" method passed in to the
+Writable constructor when creating you own streams. This causes some confusion when reading documentation
+about streams and backpressure.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

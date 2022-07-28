@@ -1,0 +1,121 @@
+
+CSS describes how a html document shouuld be formatted.
+Separate structure of html doc from formatting information.
+
+A CSS file contains zero or more rules on the format:
+
+selector1, selector2, ... selectorN {prop1: val1; prop2: val2; ... propN: valN;}
+
+the selector points to the html element(s) we want to style.
+
+Selectors
+- - - - - - - -
+
+https://www.w3schools.com/cssref/css_selectors.asp
+
+o Element selector, just name the element:
+  p { ... }
+o Id selector, prefix fith "#"
+  #someId { ... }
+o Class selector, prefix with "."
+  .someClass { ... }
+o Class and element can be combined
+  p.someClass { ... }
+o A wildcard, "*", selects all elements
+
+Box model
+- - - - - - - -
+Css maintains a box around each html element. The box cosists of
+
+ o Margin
+ o Border
+ o Padding
+ o Content
+
+When setting the width of an element, by default this means the width of the content.
+For actual with, the padding, border and margin must be added.
+
+Display property
+- - - - - - - - -
+Specifies if and how an element is displayed. Every element has a default value depending on type.
+This is usually "block" (start on new line and stretch as fas as possible vertically) or
+"inline" (does not start on newline and occupies as little vertical space as possible).
+
+Setting display to "none" hides an element.
+
+Position property
+- - - - - - - - -
+Used in combo with "left", "right", "top" and "bottom" props.
+
+
+o Static (default). Position according to normal flow of the page. "left", "right" etc ignored.
+o Relative. Position relative to its normal position.
+o Fixed. Position relative viewport. Will stay in position even if page is scrolled.
+o Absolute. Position relative parent.
+
+Float/clear
+- - - - - - -
+o Float: Used for wrapping text around images. The element is like an island that "floats" and
+  the text flows around it.
+o Clear: Makes sure that text can not flow on this side of the element.
+
+Combinators
+- - - - - - -
+Describes required relationship between selectors.
+
+  div p   { ... } // Any p element somewhere inside a div element
+  div > p { ... } // Any p element directly under a div element
+  div + p { ... } // Any p element directly following a div element
+  div ~ p { ... } // Any p element sibling to div element(s)
+
+Pseudo-classes
+- - - - - - - -
+
+Added to selector to describe special state of an element.
+
+selector:pseudo-class { ... }
+
+For example we can change the style when hovering over an element:
+
+p:hover { background-color: red; }
+
+Pseudo-elements
+- - - - - - - -
+
+o Style only parts of an element 
+o Insert extra content before or after the elements original content.
+
+selector::pseudo-element { ... }
+
+Attrubute selectors
+- - - - - - - - - -
+ [attribute]          = element has attribute
+ [attribute = "val"]  = element has attribute with value "val"
+ [attribute ^= "val"] = element has attribute name containing value
+ [attribute |= "val"] = element has attribute value starting with value
+ [attribute $= "val"] = element has attribute value ending with value
+ [attribute *= "val"] = element has attribute value containing value
+
+input[type="button"] {
+    width: 120px;
+    margin-left: 35px;
+    display: block;
+}
+
+box-sizing: border-box
+- - - - - - - - - - -
+
+Allows for padding and border to be included in elements total width/height.
+Otherwise one has to subtract the padding and border when calculating space
+for an element.
+
+   
+Flexbox layout
+- - - - - - - -
+
+o Layout, align and distribute space among items in a container, with dynamic/unknown size.
+o Gives the container ability to alter the items width/height/order to best fill the available space.
+o Flexbox is direction-agnistic, menaing that it works for both horisontal and vertical orientations.
+
+
+

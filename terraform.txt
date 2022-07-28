@@ -1,0 +1,11 @@
+"Infrastructre as code"
+
+Define infrastructure in config files (as opposed to clicking some web gui).
+
+Plugins called "providers" allow terraform to interact with various cloud platforms.
+
+Providers define units of infrastructure as "resources".
+
+User-written "modules" combine resources from several different providers.
+
+Language is declarative and describes only the disered end-state (says nothing about how to get there)

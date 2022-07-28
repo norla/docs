@@ -1,0 +1,61 @@
+Dir structure:
+
+BASE_DIR
+  build.sbt
+  src/main/scala
+  src/main/java
+  project                  
+  project/build.properties
+
+
+Projetcs folder
+- - - - - - - -
+Builds are defined as scala code. They too are built using SBT.
+This "build of the build" is defined in the projects folder.
+
+Build definition
+- - - - - - - - -
+
+Sbt version is specified int project/build.properties.
+The sbt launcher will download the correct version before executing build.
+
+Build.sbt
+- - - - - 
+build.sbt defines a set of subprojects.
+Each subproject is configured via key-value pairs using the settings() method:
+
+```
+lazy val root = (project in file("."))
+  .settings(
+    name := "Hello",
+    ...
+  )
+```
+
+"key := body" is a setting/task expression.
+key is an inastance of SettingKey[T], TaskKey[T] or InputKey[T]
+values with TaskKeys are re-evaluated each time they are accessed, with possible side-effects.
+values with SettingKeys are evalluated once and then kept around.
+
+:= op assigns a value to a setting and a computation to a task.
+
+Dependency formats:
+
+org.test %  struts-framework % 1.2.3        - regular dep
+org.test %% struts-framework % 1.2.3        - includes scala version in jar name
+org.tet. %  struts-framework % 1.2.3 % test - only use for specified conf ("test", "compile", etc)
+
+Tasks
+- - - -
+
+
+Multiproject builds
+- - - - - - - - - -
+Each subproject has it's own subtree and generates it's own jar file.
+
+A subproject is defined as a lazy val in the root project.
+
+lazy val util = (project in file("util"))
+
+Common settings can be defined in a sequence
+

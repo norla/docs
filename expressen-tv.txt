@@ -1,0 +1,3 @@
+qbrick - cdn for video. transcodes into different formats for different devices.
+viz - video cms. set headline, add captions etc.
+epi - turns video from viz into webtv-article and publishes to content api.

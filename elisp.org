@@ -1,0 +1,9 @@
+#+TITLE:elisp
+
+# Lists
+Both data an programs are lists of words (atoms), number or other lists, separated by
+whitespace and surrounded by parenthesis.
+
+'(apple orange pear banana)
+
+() is called the emtpy list and is both an atom and a list at the same time.

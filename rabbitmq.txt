@@ -1,0 +1,39 @@
+# Queue mirroring
+
+Exchanges and bindings are located an all nodes in the cluster.
+By default queue contents are located on a single node in the cluster.
+To overcome this queues can be mirrored accross multiple nodes for better availability.
+
+A mirrored queue has 1 master and 1-n mirrors. Clients talk to the master the master
+and changes are propagated to the mirrors. So all nodes have to do all the work, there
+is no load balancing taking place.
+
+
+While a queue is synchronized all other queue ops are blocked.
+
+Two sync modes:
+
+o Manual: (default) new nodes only receive new messages and will become an exact replica over time.
+o Automatic: new nodes also reveive all existing messages. Can cause massive blocking.
+
+## Unmirrored queues
+Durable: will become unavailable until the node is back online
+Transient: will simply disappear.
+
+## Promition
+If a master node fails, the oldest synchronized mirror will be elected as new master.
+
+###ha_promote_on_shutdown
+What to do if master is shut down in a controlled manner.
+* when_synced: Slaves only take over if fully synced. If no slaves are in sync, treat queue as missing. (DEFAULT)
+* always: Slaves take over regardless of whether they are in sync or not. (High Availability but can cause msg loss)
+
+###ha_promote_on_failure
+What to do if master crashes.
+* when_synced: Slaves only take over if fully synced. If no slaves are in sync, treat queue as missing.
+               This is not recommended as the queue must be force deleted in case the master node does
+               not return.
+* always: Slaves take over regardless of whether they are in sync or not. (DEFAULT)
+
+Summa summarum: durable queues should ALWAYS be mirrored.
+A durable non-mirrored queue will become unavailable until the nodes comes back online.

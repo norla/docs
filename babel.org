@@ -1,0 +1,11 @@
+#+TITLE:babel
+
+Toolchain for converting modern javascript code (ECMA 2015+) into "good old"
+javascript undesertood by web browsers current and older.
+
+Transformations are provided by plugins.
+A set of plugincs performing a common task is called a *preset*.
+
+- preset-env: use latest js without micromanaging which transforms and polyfills
+  are needed by your target env(s).
+- preset-react: preset for jsx syntax transforms

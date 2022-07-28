@@ -1,0 +1,100 @@
+IaaS: Infrastructure as a service. Specify memory, cpu etc and get a virtual
+      machine where you then install OS/Software. Exampe: azure, EC2
+SaaS: Software as as service. Ni administration needed, just sign up and start
+      using. Example: Gmail, Feedly
+PaaS: Middle ground between SaaS and IaaS. Issue a few commands and the platform
+      spins up the pieces required to run your service.
+
+"Openshift" is a PaaS from RedHat.
+
+"Openshift online" is Openshift hosted by Redhat on AWS. To use it, create an account
+and go.
+
+Infrastructure components
+----------
+
+Container orchestration software used by openshift for deployment and scaling.
+
+Cluster:        Masters + nodes
+Master:         Contains api server and etcd. Manages nodes and schedules pods to run on these nodes
+Img registry:   Docker image registry (internal or 3rd party)
+Node:           Runtime environment for containers. Contains services that enables it to run pods (Docker,
+ 	        kubelet etc)
+
+Core concepts
+-------------
+
+Container:   Lightweight mecahnism for isolating running processes sp o that can only interact with
+             their designated resrouces.
+
+Docker img:  Binary that include all requirements for running a container. Plus metadata describing
+             it's needs and capabilities.
+
+Pod:         Kubernetes.
+             One ore more containers deployed together on one host. Smallest unit that can be managed.
+  	         Each pod is allocated it's own internal IP adress and owns it's entire port space.
+	           Containers in pods share local storage and networking.
+             Pods have a lifecycle: defined, assigned to node, removed
+	           Pods are immutable and expendable.
+	           Pods are managed by high-level controllers, not directly by users.
+
+Service:     Kubernetes. Internal load balancer.
+             Identifies a set of (replicated) pods in order to proxy connections it recieves to them.
+	     Backing pods can be added and removed from the service while it remains available.
+	     Assigned IP adress and port.
+Label:       Kubernetes. Pods can be tagged with labels som that they can be managed in a single operation
+	     Services use label selectors to find pods to proxy to.
+
+Namespace:   Kubernetes. Scopes resources in a cluster. Most objects in openshift are scoped by namespace.
+             Nodes and users are two exceptions to this.
+Project:     A namespace with extra annotations. Means for regular users to access resources. Allows a
+	     group of users to manage their content in isolation of other groups.
+Build:       Transforms source code to a runnable docker image. A repos with a Dockerfile and source code.
+Img stream:  Automatically performs an action when a new image is created.
+             Comprises docker images identified by tags.
+Deployment:  Kubernetes "replication controllers" ensures that a specified number if replicas of a pod
+             are always running.
+	     Openshift deployments are replication controllers plus:
+	       - Transition abilities from an existing image to a new one
+	       - Hooks that can be run before/after the deployment.
+	       - Triggers for create a new deployment automatically.
+Route:       Gives a service an externally-reachable hostname.
+Template:    Describes a set of objects that can be parameterized to produce a list of objects for creation
+             by openshift.
+
+Networking
+----------
+Kubernetes nesure that pods can communicate with eachother.
+Each pod is allocated an Ip adress from an internal network.
+
+Pods should never talk directly to each other. Use services for this.
+Openshift has a built-in dns so that a service can reached by name inside the cluster.
+
+Storage
+-------
+
+PV : Persistant volume. Piece of storage provisioned by an administrator.
+     Lifecycle is independent of any pods that use it.
+PVC: PV Claim. A user request for storage. Allows users to define different characteristics
+     such as size and performance.
+
+
+????
+
+Application: Web application to run.
+Gear:        Server container with a set of hardware resources. Comes in small, medium and large.
+Cartridges:  Plugins that house framework that can be used to create and run an application.
+             Standalone: Servers that can serve web content. Tomcat, node.js etc
+	     Embedded:   Enhances application but can not run them on it's own. Cron, Mysql etc
+
+????
+
+Image registry
+--------------
+
+Built in docker registry
+
+
+
+TODO
+

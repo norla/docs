@@ -1,11 +1,10 @@
-Multiple cursors
-- - - - - - - - - - 
+# Multiple cursors
+
 C->           : Add cursor right
 C-<           : Add cursor left
 C-c C-<       : Add cursor all
 
-Navigation
-- - - - - - - - - -
+# Navigation
 M-b/f         : back/fwd word
 C-a/e         : back/fwd line
 M-a/e         : back/fwd sentence
@@ -19,14 +18,5 @@ M-v           : scroll prev screen
 
 C-x C-[SPC]   : Pop mark
 
-General
-- - - - - - - - - -
+# General
 M-[NUM]       : Set prefix argument
-
-
------
-ELISP
------
-
-
-

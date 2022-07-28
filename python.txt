@@ -1,0 +1,34 @@
+- - - - -
+Iterators
+- - - - -
+
+Represents a stream of data.
+__next__() method is required.
+Pyhtons built-in "iter()" creates an iterator from an object (or throws TypeError).
+An object that can be used to create an iterator with "iter()" is called an "iterable".
+Python expects iterables in several contexts, the most common being the for loop.
+
+Iterable datatypes
+- - - - - - - - -
+ o Lists
+ o Strings
+ o Tuples
+ o Dictionaries (can be initiialized with iterator of 2-tuples and lets you iterate over keys)
+ o Sets (Takes content from iterator and lets you iterate over elemets)
+
+Liscomps and genexps
+- - - -- - - - - - -
+
+List comprehensions generate a python List
+[ expression for x in iterable1 if cond1 for y in iterable2 if cond 2 ... ]
+
+Genereator expressions generate an iterator
+( expression for x in iterable1 if cond1 for y in iterable2 if cond 2 ... )
+
+Genexps computes each value only as necessary, while a listcomp generates the full list at once. 
+So genexps are preferred for large/infinate data sets.
+
+Generators
+- - - - - -
+
+

@@ -1,0 +1,21 @@
+RDKAFKA
+
+Multi-threaded client library for Kafka designed for use on "modern hardware" (?). 
+Attempts to keep memory to a minimal, payload of consumed messages can pass through to 
+the application with 0 memory copying if desired.
+
+Can be configured for high throughput or low latency
+
+Two most important config settings are:
+
+* batch.num.messages
+* queue.buffering.max.ms 
+
+Reliability
+- - - - - - -
+
+request.required.acks - if set wait for ack from all expected brokers.
+message.send.max-retries - attempts before reporting back to application
+
+message delivery status is sent to the app using a delivery report.
+

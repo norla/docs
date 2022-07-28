@@ -21,3 +21,40 @@ go get:
 downloads and installs the packages named by the import paths,
 along with their dependencies.
 
+methods
+--------
+
+are added to structs.
+two types:
+   value receivers (cannot mutate struct)
+   pointer receivers (can mutate struct)
+
+
+goroutines
+----------
+
+add "go" to method call.
+
+go someFunction(someParam)
+
+channels
+--------
+to return values from goroutines use channels
+
+```
+func someFunc(c chan int, someValue int) {
+  c <- someValue * 5
+}
+
+func main() {
+  myChan := make(chan int, 10)
+  go someFunc(myChan, 3)
+  res := <- myChan
+}
+```
+
+channels block until the other end is ready.
+
+unless the channel is buffered. then sends block when the channel is full, and receives block when empty.
+
+

@@ -1,0 +1,29 @@
+- - - - 
+The log
+- - - - 
+
+A re-playable persistent record of history.
+
+Historically solves two problems in database:
+ 1. ordering changes (for restoring stae after crash)
+ 2. distributing data (for replication to slave nodes)
+
+State machine replication pricnciple:
+ - If two identical, deterministic processes in the same state
+   get the same input in the same order, they will produce the
+   exact same output and end in the same state.
+ - The state of a replica can be described simply by the timestamp of the last processed input.
+
+Tables vs logs:
+  - Tables describe snapshots of data at rest
+  - Logs caputure change.
+  - The log can be used to recreate the snapshot.
+  - The log can be used to recreate any previous version of the snapshot.
+
+Data integration:
+  - Making all data an organisation has available in all its systems
+  - Problems: Lots of data is event based, and there are many storage solutions used in an organisation.
+  - Solution: Put all data it in a central log for real-time subscription
+  - Easy to check if a subsystem (for example a cache) has gotten an update yet:
+    just check that it has a timestamp greater than X.
+
